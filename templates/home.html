@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load bootstrap4 %}
+
+{% block category %}
+  {% with mid_list as mid_list %}
+  {{block.super}}
+  {% endwith %}
+{% endblock category %}
+
+{% block content %}
+    {% if current %}
+        <div class="card" style="width: 100%;">
+            <div class="card-body">
+                <h5 class="card-title">{{ current.title }}</h5>
+                <p class="card-text">{{ current.body }}</p>
+                <ul>
+                    {% for link in current.links %}
+                        <li>{{ link|safe }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block content_list %}
+    <div class="list-group">
+        {% for content in content_list %}
+            <a href="{% url 'home' %}?{{ content.query }}"
+               class="list-group-item list-group-item-action{% if content.is_current %} active{% endif %}">{{ content.title }}</a>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block pagination %}
+    <nav aria-label="Page navigation">
+        {% if pagination %}
+            <ul class="pagination">
+                {% for page in pagination %}
+                    <li class="page-item{% if page.active %} active{% endif %}">
+                        <a class="page-link" href="{% url 'home' %}?{{ page.query }}">{{ page.text }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </nav>
+{% endblock %}
