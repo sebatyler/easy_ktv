@@ -12,6 +12,7 @@ certifi==2018.1.18        # via requests
 cfn-flip==1.0.0           # via troposphere
 chardet==3.0.4            # via requests
 click==6.7                # via cfn-flip, kappa, pip-tools
+django-bootstrap4==0.0.6
 django==2.0.2
 docutils==0.14            # via botocore, zappa
 durationpy==0.5           # via zappa
