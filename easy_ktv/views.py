@@ -64,7 +64,7 @@ def home(request):
             html = requests.get(url)
             soup = BeautifulSoup(html.content, 'html.parser')
 
-        links = soup.find_all("span", string=re.compile("(SHOW|MOVIE) LINK \| "))
+        links = soup.find_all("span", string=re.compile("(SHOW|MOVIE|DRAMA)(.*)? LINK \| "))
         links = [str(link.find_parent('a')) for link in links]
         current.update(body=body, links=links)
 
