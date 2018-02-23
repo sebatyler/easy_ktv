@@ -14,8 +14,9 @@ def home(request):
     headers = {'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) "
                              "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36"}
 
+    # search_target=title&search_keyword=무한도전
     params = dict(mid='entertain', page="1")
-    params.update(**pydash.pick(request.GET, 'mid', 'page'))
+    params.update(**pydash.pick(request.GET, 'mid', 'page', 'search_target', 'search_keyword'))
 
     html = requests.get(url, params=params, headers=headers)
     soup = BeautifulSoup(html.content, 'html.parser')
