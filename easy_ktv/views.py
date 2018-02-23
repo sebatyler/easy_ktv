@@ -19,9 +19,6 @@ def home(request):
 
     html = requests.get(url, params=params, headers=headers)
     soup = BeautifulSoup(html.content, 'html.parser')
-    rows = soup.select('table.boardList tr td.title > a:nth-of-type(1)')
-    query_set = {"{}={}".format(k, v) for k, v in request.GET.items()}
-    current = None
     pagination = []
 
     for anchor in soup.find("ul", class_="pagination").find_all('a'):
@@ -33,7 +30,14 @@ def home(request):
             query="mid={}&page={}".format(params['mid'], page))
         )
 
+    menu_anchor = next((a for a in soup.select("div.container div.list-group a") if a.text == '다시보기'))
+    menu_list = [(anchor.get('href').split('/')[-1], anchor.text) for anchor in menu_anchor.find_next_siblings('a')]
+
+    rows = soup.select('table.boardList tr td.title > a:nth-of-type(1)')
+    query_set = {"{}={}".format(k, v) for k, v in request.GET.items()}
+    current = None
     content_list = []
+
     for row in rows:
         content = dict(title=row.text, query=row.get('href').split('?')[-1])
         content['query_set'] = set(content['query'].split('&'))
@@ -65,7 +69,7 @@ def home(request):
         current.update(body=body, links=links)
 
     context = dict(
-        mid_list=['entertain', 'movie'],
+        menu_list=menu_list,
         mid_param=params['mid'],
         content_list=content_list,
         current=current,
