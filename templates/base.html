@@ -18,9 +18,9 @@
 <div class="container">
     <nav class="nav nav-pills flex-column flex-sm-row">
         {% block category %}
-            {% for mid in mid_list %}
+            {% for mid, title in menu_list %}
                 <a class="flex-sm-fill text-sm-center nav-link{% if mid == mid_param %} active{% endif %}"
-                   href="{% url 'home' %}?mid={{ mid }}">{{ mid }}</a>
+                   href="{% url 'home' %}?mid={{ mid }}">{{ title }}</a>
             {% endfor %}
         {% endblock %}
     </nav>
