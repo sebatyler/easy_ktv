@@ -1,14 +1,36 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
 {% load bootstrap4 %}
-
-{% block category %}
-  {% with menu_list as menu_list %}
-  {{block.super}}
-  {% endwith %}
-{% endblock category %}
-
-{% block content %}
-    {% if current %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>easy ktv</title>
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {% bootstrap_messages %}
+    <style>
+        html {
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <nav class="nav nav-pills flex-column flex-sm-row">
+        {% for mid, title in menu_list %}
+            <a class="flex-sm-fill text-sm-center nav-link{% if mid == mid_param %} active{% endif %}"
+               href="{% url 'home' %}?mid={{ mid }}">{{ title }}</a>
+        {% endfor %}
+        <form class="form-inline">
+            <input type="hidden" name="mid" value="{{ mid_param }}" />
+            <input type="hidden" name="search_target" value="title" />
+            <input class="form-control" type="search" name="search_keyword" placeholder="제목" />
+            <input class="form-control" type="submit" value="검색" />
+        </form>
+    </nav>
+</div>
+{% if current %}
+    <div class="container">
         <div class="card" style="width: 100%;">
             <div class="card-body">
                 <h5 class="card-title">{{ current.title }}</h5>
@@ -20,21 +42,19 @@
                 </ul>
             </div>
         </div>
-    {% endif %}
-{% endblock %}
-
-{% block content_list %}
+    </div>
+{% endif %}
+<div class="container">
     <div class="list-group">
         {% for content in content_list %}
             <a href="{% url 'home' %}?{{ content.query }}"
                class="list-group-item list-group-item-action{% if content.is_current %} active{% endif %}">{{ content.title }}</a>
         {% endfor %}
     </div>
-{% endblock %}
-
-{% block pagination %}
-    <nav aria-label="Page navigation">
-        {% if pagination %}
+</div>
+{% if pagination %}
+    <div class="container">
+        <nav aria-label="Page navigation">
             <ul class="pagination">
                 {% for page in pagination %}
                     <li class="page-item{% if page.active %} active{% endif %}">
@@ -42,6 +62,8 @@
                     </li>
                 {% endfor %}
             </ul>
-        {% endif %}
-    </nav>
-{% endblock %}
+        </nav>
+    </div>
+{% endif %}
+</body>
+</html>
