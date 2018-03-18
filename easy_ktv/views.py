@@ -4,7 +4,6 @@ import requests
 
 from django.shortcuts import render
 
-import pydash
 from bs4 import BeautifulSoup
 
 
@@ -16,20 +15,18 @@ def home(request):
 
     # search_target=title&search_keyword=무한도전
     params = dict(mid='entertain', page="1")
-    params.update(**pydash.pick(request.GET, 'mid', 'page', 'search_target', 'search_keyword'))
+    params.update(**{k: v for k, v in request.GET.items()})
 
     html = requests.get(url, params=params, headers=headers)
     soup = BeautifulSoup(html.content, 'html.parser')
     pagination = []
 
     for anchor in soup.find("ul", class_="pagination").find_all('a'):
-        page = re.search(r'page=(\d+)', anchor.get('href'))
-        page = page[1] if page else 1
         pagination.append(dict(
             text=anchor.text,
             active=params['page'] == anchor.text,
-            query="mid={}&page={}".format(params['mid'], page))
-        )
+            query=anchor.get('href').split('?')[-1]
+        ))
 
     menu_anchor = next((a for a in soup.select("div.container div.list-group a") if a.text == '다시보기'))
     menu_list = [(anchor.get('href').split('/')[-1], anchor.text) for anchor in menu_anchor.find_next_siblings('a')]
