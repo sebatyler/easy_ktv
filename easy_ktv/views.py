@@ -1,4 +1,5 @@
 import re
+from urllib.parse import quote_plus
 
 import requests
 
@@ -32,7 +33,7 @@ def home(request):
     menu_list = [(anchor.get('href').split('/')[-1], anchor.text) for anchor in menu_anchor.find_next_siblings('a')]
 
     rows = soup.select('table.boardList tr td.title > a:nth-of-type(1)')
-    query_set = {"{}={}".format(k, v) for k, v in request.GET.items()}
+    query_set = {f"{k}={quote_plus(v)}" for k, v in request.GET.items()}
     current = None
     content_list = []
 
