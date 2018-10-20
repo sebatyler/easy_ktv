@@ -49,7 +49,7 @@ def home(request):
     if current:
         content_id = next((query.split('=')[-1] for query in current['query'].split('&')
                            if query.startswith('document_srl=')))
-        html = requests.get("{}/{}".format(url_prefix, content_id))
+        html = requests.get("{}/ooo/{}".format(url_prefix, int(content_id) - 1))
         soup = BeautifulSoup(html.content, 'html.parser')
 
         fonts = soup.select("font:nth-of-type(2)")
