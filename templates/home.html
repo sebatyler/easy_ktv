@@ -33,7 +33,7 @@
     <div class="container">
         <div class="card" style="width: 100%;">
             <div class="card-body">
-                <h5 class="card-title">{{ current.title }}</h5>
+                <h5 class="card-title">{{ current.title }} <a href="{{ current.source }}" target="_blank">Source</a></h5>
                 <p class="card-text">{{ current.body }}</p>
                 <ul>
                     {% for link in current.links %}
@@ -65,5 +65,10 @@
         </nav>
     </div>
 {% endif %}
+<div class="container">
+    <div class="alert alert-warning" role="alert">
+        <a href="https://github.com/sebatyler/easy_ktv/issues" class='alert-link' target="_blank">오류 신고 or 개선 의견 등록하기</a>
+    </div>
+</div>
 </body>
 </html>
