@@ -31,7 +31,11 @@ def home(request):
         ))
 
     menu_anchor = next((a for a in soup.select("div.container div.list-group a") if a.text == '다시보기'))
-    menu_list = [(anchor.get('href').split('/')[-1], anchor.text) for anchor in menu_anchor.find_next_siblings('a')]
+    menu_list = py_(menu_anchor.find_next_siblings('a')).filter(
+        lambda a: a.get('href').startswith('https://dongyoungsang')
+    ).map(
+        lambda a: (a.get('href').split('/')[-1], a.text)
+    ).value()
 
     rows = soup.select('table.boardList tr td.title > a:nth-of-type(1)')
     query_set = {f"{k}={quote_plus(v)}" for k, v in request.GET.items()}
