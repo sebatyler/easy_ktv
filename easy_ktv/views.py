@@ -74,7 +74,7 @@ def home(request):
         response = py_(responses).map(
             lambda r: dict(soup=BeautifulSoup(r.content, 'html.parser'), url=r.url)
         ).find(
-            lambda r: r['soup'].title.text.endswith(current['title'].strip())
+            lambda r: py_.clean(r['soup'].title.text).endswith(py_.clean(current['title'].strip()))
         ).value()
 
         soup = response['soup']
