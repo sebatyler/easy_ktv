@@ -33,7 +33,7 @@
     <div class="container">
         <div class="card" style="width: 100%;">
             <div class="card-body">
-                <h5 class="card-title">{{ current.title }}</h5>
+                <h5 class="card-title">{{ current.title }} <a href="{{ current.source }}" target="_blank">Source</a></h5>
                 <p class="card-text">{{ current.body }}</p>
                 <ul>
                     {% for link in current.links %}

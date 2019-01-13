@@ -1,11 +1,12 @@
+import asyncio
 import re
 from urllib.parse import quote_plus
 
 import requests
+from bs4 import BeautifulSoup
+from pydash import py_
 
 from django.shortcuts import render
-
-from bs4 import BeautifulSoup
 
 
 def home(request):
@@ -49,9 +50,30 @@ def home(request):
     if current:
         content_id = next((query.split('=')[-1] for query in current['query'].split('&')
                            if query.startswith('document_srl=')))
-        html = requests.get("{}/ooo/{}".format(url_prefix, int(content_id) - 1))
-        soup = BeautifulSoup(html.content, 'html.parser')
 
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+        async def request_async():
+            futures = [
+                loop.run_in_executor(
+                    None,
+                    requests.get,
+                    f"{url_prefix}/ooo/{int(content_id) + i}"
+                ) for i in range(2)
+            ]
+            return await asyncio.gather(*futures)
+
+        responses = loop.run_until_complete(request_async())
+        loop.close()
+
+        response = py_(responses).map(
+            lambda r: dict(soup=BeautifulSoup(r.content, 'html.parser'), url=r.url)
+        ).find(
+            lambda r: r['soup'].title.text.endswith(current['title'].strip())
+        ).value()
+
+        soup = response['soup']
         fonts = soup.select("font:nth-of-type(2)")
         body = fonts[0].text.strip() if fonts else ''
         if ' 팝업광고창' in body:
@@ -65,7 +87,7 @@ def home(request):
 
         links = soup.find_all("span", string=re.compile("(SHOW|MOVIE|DRAMA)(.*)? LINK \| "))
         links = [str(link.find_parent('a')) for link in links]
-        current.update(body=body, links=links)
+        current.update(body=body, links=links, source=response['url'])
 
     context = dict(
         menu_list=menu_list,
