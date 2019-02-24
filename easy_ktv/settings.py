@@ -25,7 +25,7 @@ SECRET_KEY = '^2*e92$)*1!)fge60wya&^mde)%nni4@9r%gz$166(-49fzuem'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.amazonaws.com', 'localhost', '.seba.zone']
+ALLOWED_HOSTS = ['.amazonaws.com', 'localhost', '.seba.zone', '.sebatyler.tk']
 
 
 # Application definition
