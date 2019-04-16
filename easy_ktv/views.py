@@ -16,7 +16,7 @@ def home(request):
                              "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36"}
 
     # search_target=title&search_keyword=무한도전
-    params = dict(mid='entertain', page="1")
+    params = dict(mid='en', page="1")
     params.update(**{k: v for k, v in request.GET.items()})
 
     html = requests.get(url, params=params, headers=headers)
