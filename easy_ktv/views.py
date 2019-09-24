@@ -10,7 +10,7 @@ from django.shortcuts import render
 
 
 def home(request):
-    url_prefix = "https://dongyoungsang.net"
+    url_prefix = "https://dongyoungsang.club"
     url = url_prefix + "/index.php"
     headers = {'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) "
                              "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36"}
@@ -89,7 +89,7 @@ def home(request):
             html = requests.get(url)
             soup = BeautifulSoup(html.content, 'html.parser')
 
-        links = soup.find_all("span", string=re.compile("(SHOW|MOVIE|DRAMA)(.*)? LINK \| "))
+        links = soup.find_all("span", string=re.compile(r"(SHOW|MOVIE|DRAMA)(.*)?LINK"))
         re_link = re.compile(r'(href=[\'"])(https?://[^?]+\?(https?://[^\'"]+))')
 
         links = py_(links).map(lambda link: str(link.find_parent('a'))).map(
