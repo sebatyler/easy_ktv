@@ -4,13 +4,14 @@ from urllib.parse import quote_plus
 
 import requests
 from bs4 import BeautifulSoup
+from honey.asyncio import run_async
 from pydash import py_
 
 from django.shortcuts import render
 
 
 def home(request):
-    url_prefix = "https://dongyoungsang.net"
+    url_prefix = "https://dongyoungsang.club"
     url = url_prefix + "/index.php"
     headers = {'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) "
                              "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36"}
@@ -55,22 +56,7 @@ def home(request):
         content_id = next((query.split('=')[-1] for query in current['query'].split('&')
                            if query.startswith('document_srl=')))
 
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-
-        async def request_async():
-            futures = [
-                loop.run_in_executor(
-                    None,
-                    requests.get,
-                    f"{url_prefix}/ooo/{int(content_id) + i}"
-                ) for i in range(2)
-            ]
-            return await asyncio.gather(*futures)
-
-        responses = loop.run_until_complete(request_async())
-        loop.close()
-
+        responses = run_async(lambda i: requests.get(f"{url_prefix}/ooo/{int(content_id) + i}"), range(2))
         response = py_(responses).map(
             lambda r: dict(soup=BeautifulSoup(r.content, 'html.parser'), url=r.url)
         ).find(
@@ -89,7 +75,7 @@ def home(request):
             html = requests.get(url)
             soup = BeautifulSoup(html.content, 'html.parser')
 
-        links = soup.find_all("span", string=re.compile("(SHOW|MOVIE|DRAMA)(.*)? LINK \| "))
+        links = soup.find_all("span", string=re.compile(r"(SHOW|MOVIE|DRAMA)(.*)?LINK"))
         re_link = re.compile(r'(href=[\'"])(https?://[^?]+\?(https?://[^\'"]+))')
 
         links = py_(links).map(lambda link: str(link.find_parent('a'))).map(
