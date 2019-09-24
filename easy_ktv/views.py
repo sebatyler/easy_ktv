@@ -4,6 +4,7 @@ from urllib.parse import quote_plus
 
 import requests
 from bs4 import BeautifulSoup
+from honey.asyncio import run_async
 from pydash import py_
 
 from django.shortcuts import render
@@ -55,22 +56,7 @@ def home(request):
         content_id = next((query.split('=')[-1] for query in current['query'].split('&')
                            if query.startswith('document_srl=')))
 
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-
-        async def request_async():
-            futures = [
-                loop.run_in_executor(
-                    None,
-                    requests.get,
-                    f"{url_prefix}/ooo/{int(content_id) + i}"
-                ) for i in range(2)
-            ]
-            return await asyncio.gather(*futures)
-
-        responses = loop.run_until_complete(request_async())
-        loop.close()
-
+        responses = run_async(lambda i: requests.get(f"{url_prefix}/ooo/{int(content_id) + i}"), range(2))
         response = py_(responses).map(
             lambda r: dict(soup=BeautifulSoup(r.content, 'html.parser'), url=r.url)
         ).find(
