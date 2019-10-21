@@ -38,10 +38,10 @@ tqdm==4.19.1              # via zappa
 troposphere==2.2.0        # via zappa
 unidecode==1.0.22         # via python-slugify
 urllib3==1.24.1           # via requests
-werkzeug==0.14.1          # via zappa
+werkzeug==0.15.3          # via zappa
 wheel==0.30.0             # via zappa
 wsgi-request-logger==0.4.6  # via zappa
 zappa==0.47.1
 
 # The following packages are considered to be unsafe in a requirements file:
-# pip==19.2.3               # via zappa
+# pip==19.3.1               # via zappa
