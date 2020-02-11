@@ -14,7 +14,7 @@ cfn-flip==1.0.0           # via troposphere
 chardet==3.0.4            # via requests
 click==6.7                # via cfn-flip, kappa, pip-tools
 django-bootstrap4==0.0.6
-django==2.1.5
+django==2.2.10
 docutils==0.14            # via botocore, zappa
 durationpy==0.5           # via zappa
 future==0.16.0            # via zappa
@@ -33,6 +33,7 @@ pyyaml==3.13              # via cfn-flip, kappa, zappa
 requests==2.21.0          # via zappa
 s3transfer==0.1.13        # via boto3
 six==1.11.0               # via cfn-flip, pip-tools, python-dateutil, zappa
+sqlparse==0.3.0           # via django
 toml==0.9.4               # via zappa
 tqdm==4.19.1              # via zappa
 troposphere==2.2.0        # via zappa
@@ -44,4 +45,4 @@ wsgi-request-logger==0.4.6  # via zappa
 zappa==0.47.1
 
 # The following packages are considered to be unsafe in a requirements file:
-# pip==19.2.3               # via zappa
+# pip
