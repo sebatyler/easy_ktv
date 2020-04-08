@@ -1,10 +1,8 @@
-import asyncio
 import re
 from urllib.parse import quote_plus
 
 import requests
 from bs4 import BeautifulSoup
-from honey.asyncio import run_async
 from pydash import py_
 
 from django.shortcuts import render
@@ -12,33 +10,42 @@ from django.shortcuts import render
 
 def home(request):
     url_prefix = "https://dongyoungsang.club"
-    url = url_prefix + "/index.php"
+    url = url_prefix + "/bbs/board.php"
     headers = {'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) "
                              "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36"}
 
-    # search_target=title&search_keyword=무한도전
-    params = dict(mid='en', page="1")
+    category_key = 'bo_table'
+    params = {category_key: 'en', 'page': "1"}
     params.update(**{k: v for k, v in request.GET.items()})
 
     html = requests.get(url, params=params, headers=headers)
     soup = BeautifulSoup(html.content, 'html.parser')
-    pagination = []
 
+    # pagination
+    pagination = []
     for anchor in soup.find("ul", class_="pagination").find_all('a'):
+        href = anchor.get('href')
+        if not href or anchor.find('i'):
+            continue
+
         pagination.append(dict(
             text=anchor.text,
             active=params['page'] == anchor.text,
-            query=anchor.get('href').split('?')[-1]
+            query=href.split('?')[-1],
+            blank_url=url_prefix + href if '이전자료검색' in anchor.text else None
         ))
 
-    menu_anchor = next((a for a in soup.select("div.container div.list-group a") if a.text == '다시보기'))
-    menu_list = py_(menu_anchor.find_next_siblings('a')).filter(
-        lambda a: a.get('href').startswith('https://dongyoungsang')
-    ).map(
-        lambda a: (a.get('href').split('/')[-1], a.text)
+    # menu
+    menu_anchor = py_.find(soup.select('div#nt_body a.list-group-item'), lambda a: a.text == '다시보기')
+    menu_list = py_(menu_anchor.find_next_siblings('a')).map(
+        lambda a: (a.get('href').strip('/'), a.text)
+    ).filter(
+        # TODO: include movie/ani
+        lambda m: '/' not in m[0]
     ).value()
 
-    rows = soup.select('table.boardList tr td.title > a:nth-of-type(1)')
+    # content list
+    rows = soup.select('ul.bo_list a#link')
     query_set = {f"{k}={quote_plus(v)}" for k, v in request.GET.items()}
     current = None
     content_list = []
@@ -52,43 +59,29 @@ def home(request):
 
         content_list.append(content)
 
+    # current content
     if current:
-        content_id = next((query.split('=')[-1] for query in current['query'].split('&')
-                           if query.startswith('document_srl=')))
+        body = str(soup.select_one('div#bo_v_con > div:nth-of-type(2)') or '')
 
-        responses = run_async(lambda i: requests.get(f"{url_prefix}/ooo/{int(content_id) + i}"), range(2))
-        response = py_(responses).map(
-            lambda r: dict(soup=BeautifulSoup(r.content, 'html.parser'), url=r.url)
-        ).find(
-            lambda r: py_.clean(r['soup'].title.text).endswith(py_.clean(current['title'].strip()))
-        ).value()
+        content_anchor = soup.select_one('section#bo_v_atc > div:nth-of-type(2) > a.btn')
+        content_href = content_anchor.get('href')
+        content_url = url_prefix + content_href
 
-        soup = response['soup']
-        fonts = soup.select("font:nth-of-type(2)")
-        body = fonts[0].text.strip() if fonts else ''
-        if ' 팝업광고창' in body:
-            body = ''
+        response = requests.get(content_url)
+        soup = BeautifulSoup(response.content, 'html.parser')
 
-        link_element = soup.find(string="링크모음 보러가기")
-        if link_element:
-            url = url_prefix + link_element.find_parent('a').get('href')
-            html = requests.get(url)
-            soup = BeautifulSoup(html.content, 'html.parser')
-
-        links = soup.find_all("span", string=re.compile(r"(SHOW|MOVIE|DRAMA)(.*)?LINK"))
+        links = soup.select('section#bo_v_atc a.btn')
         re_link = re.compile(r'(href=[\'"])(https?://[^?]+\?(https?://[^\'"]+))')
 
-        links = py_(links).map(lambda link: str(link.find_parent('a'))).map(
-            lambda a: re_link.sub(r'\1\3', a)
-        ).value()
-        current.update(body=body, links=links, source=response['url'])
+        links = py_.map(links, lambda a: re_link.sub(r'\1\3', str(a)))
+        current.update(body=body, links=links, source=content_url)
 
     context = dict(
         menu_list=menu_list,
-        mid_param=params['mid'],
+        category_key=category_key,
+        category=params.get(category_key) or '',
         content_list=content_list,
         current=current,
         pagination=pagination
     )
-
     return render(request, 'home.html', context)

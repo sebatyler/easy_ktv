@@ -17,14 +17,13 @@
 <body>
 <div class="container">
     <nav class="nav nav-pills flex-column flex-sm-row">
-        {% for mid, title in menu_list %}
-            <a class="flex-sm-fill text-sm-center nav-link{% if mid == mid_param %} active{% endif %}"
-               href="{% url 'home' %}?mid={{ mid }}">{{ title }}</a>
+        {% for current_category, title in menu_list %}
+            <a class="flex-sm-fill text-sm-center nav-link{% if current_category == category %} active{% endif %}"
+               href="{% url 'home' %}?{{ category_key }}={{ current_category }}">{{ title }}</a>
         {% endfor %}
         <form class="form-inline">
-            <input type="hidden" name="mid" value="{{ mid_param }}" />
-            <input type="hidden" name="search_target" value="title" />
-            <input class="form-control" type="search" name="search_keyword" placeholder="제목" />
+            <input type="hidden" name="{{ category_key }}" value="{{ category }}" />
+            <input class="form-control" type="search" name="stx" placeholder="제목" />
             <input class="form-control" type="submit" value="검색" />
         </form>
     </nav>
@@ -34,7 +33,7 @@
         <div class="card" style="width: 100%;">
             <div class="card-body">
                 <h5 class="card-title">{{ current.title }} <a href="{{ current.source }}" target="_blank">Source</a></h5>
-                <p class="card-text">{{ current.body }}</p>
+                <p class="card-text">{{ current.body|safe }}</p>
                 <ul>
                     {% for link in current.links %}
                         <li>{{ link|safe }}</li>
@@ -58,7 +57,11 @@
             <ul class="pagination">
                 {% for page in pagination %}
                     <li class="page-item{% if page.active %} active{% endif %}">
-                        <a class="page-link" href="{% if page.active %}#{% else %}{% url 'home' %}?{{ page.query }}{% endif %}">{{ page.text }}</a>
+                        {% if page.blank_url %}
+                            <a class="page-link" target="_blank" href="{{ page.blank_url }}">{{ page.text }}</a>
+                        {% else %}
+                            <a class="page-link" href="{% if page.active %}#{% else %}{% url 'home' %}?{{ page.query }}{% endif %}">{{ page.text }}</a>
+                        {% endif %}
                     </li>
                 {% endfor %}
             </ul>
