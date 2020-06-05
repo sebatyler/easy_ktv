@@ -5,16 +5,16 @@
 #    pip-compile
 #
 argcomplete==1.9.3        # via zappa
-beautifulsoup4==4.6.0
-bepro-python-honey==0.0.1.3
+beautifulsoup4==4.6.0     # via -r requirements.in
+bepro-python-honey==0.0.1.3  # via -r requirements.in
 boto3==1.5.30             # via kappa, zappa
 botocore==1.8.44          # via boto3, s3transfer, zappa
 certifi==2018.1.18        # via requests
 cfn-flip==1.0.0           # via troposphere
 chardet==3.0.4            # via requests
 click==6.7                # via cfn-flip, kappa, pip-tools
-django-bootstrap4==0.0.6
-django==2.1.5
+django-bootstrap4==0.0.6  # via -r requirements.in
+django==2.2.13            # via -r requirements.in
 docutils==0.14            # via botocore, zappa
 durationpy==0.5           # via zappa
 future==0.16.0            # via zappa
@@ -23,9 +23,9 @@ idna==2.6                 # via requests
 jmespath==0.9.3           # via boto3, botocore, zappa
 kappa==0.6.0              # via zappa
 lambda-packages==0.20.0   # via zappa
-pip-tools==4.1.0
+pip-tools==4.1.0          # via -r requirements.in
 placebo==0.8.1            # via kappa
-pydash==4.7.4
+pydash==4.7.4             # via -r requirements.in
 python-dateutil==2.6.1    # via botocore, zappa
 python-slugify==1.2.4     # via zappa
 pytz==2018.3              # via django
@@ -33,6 +33,7 @@ pyyaml==3.13              # via cfn-flip, kappa, zappa
 requests==2.21.0          # via zappa
 s3transfer==0.1.13        # via boto3
 six==1.11.0               # via cfn-flip, pip-tools, python-dateutil, zappa
+sqlparse==0.3.1           # via django
 toml==0.9.4               # via zappa
 tqdm==4.19.1              # via zappa
 troposphere==2.2.0        # via zappa
@@ -41,7 +42,7 @@ urllib3==1.24.1           # via requests
 werkzeug==0.14.1          # via zappa
 wheel==0.30.0             # via zappa
 wsgi-request-logger==0.4.6  # via zappa
-zappa==0.47.1
+zappa==0.47.1             # via -r requirements.in
 
 # The following packages are considered to be unsafe in a requirements file:
-# pip==19.2.3               # via zappa
+# pip
