@@ -1,6 +1,6 @@
 Django==2.1.5
-zappa==0.47.1
-pip-tools==4.1.0
+zappa==0.54.1
+pip-tools==6.6.1
 django-bootstrap4==0.0.6
 pydash==4.7.4
 beautifulsoup4==4.6.0
